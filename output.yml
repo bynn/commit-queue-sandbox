@@ -8,6 +8,18 @@ pre:
         set -o verbose
         echo "chayaMtesting in pre"
         cat src/output.json
+
+task_groups:
+  - name: bynngroup
+    max_hosts: 1
+    setup_group:
+      - command: shell.exec
+        params:
+          script: echo "set up bynnbynn"
+    tasks:
+      - print_apple
+      - print_banana
+
 tasks:
   - name: print_apple
     commands:
@@ -16,7 +28,7 @@ tasks:
           script: |
             set -o verbose
             echo "chayaMtesting in task"
-            cat src/output.json
+            sleep 100
       - command: shell.exec
         params:
           script: echo "apple"
@@ -25,17 +37,11 @@ tasks:
       - command: shell.exec
         params:
           script: echo "banana"
+
 buildvariants:
   - name: ubuntu2204
     display_name: Ubuntu 22.04
     run_on:
       - ubuntu2204-small
     tasks:
-      - name: "print_apple"
-        create_check_run:
-          path_to_outputs: "src/output.json"
-      - name: "print_banana"
-        create_check_run:
-          path_to_outputs: ""
-    expansions:
-      checkRun_key: apple
+      - name: "bynngroup"
